@@ -58,8 +58,4 @@ All runs used Adam and cross-entropy loss.
 
 - Pretrained features are decisive. Even a linear head on a frozen backbone exceeds 90% validation accuracy in about a minute of training.
 - Fine-tuning `layer4` gives a modest gain in validation accuracy (about one point). However, its training accuracy (92.7%) ends above its validation accuracy (91.3%), and the two diverge over the run, suggesting the added capacity begins to overfit. The transfer-learning model shows no such divergence: its validation accuracy (90.4%) stays above its training accuracy (85.0%) at the final epoch, partly because training images are heavily augmented. It was therefore chosen as the saved model for its more stable generalization, at a cost of roughly one point of accuracy.
-- The custom CNN failed to learn. Its loss stayed near ln(37) ≈ 3.61 and accuracy stayed near chance (about 2.7%), and the 50-epoch run did not improve on the 10-epoch run. The scratch model, with this dataset size and setup, could not learn usable features. Likely next steps are stronger augmentation, learning-rate tuning, or a shallower design.
-
-## Limitations
-
-Metrics come from a held-out slice of `trainval`, and "best epoch" figures are chosen on that same set, so they are slightly optimistic. The official test split was not used.
+- The custom CNN failed to learn. Its loss stayed near 3.61 and accuracy stayed near chance (about 2.7%), and the 50-epoch run did not improve on the 10-epoch run. The scratch model, with this dataset size and setup, could not learn usable features. Likely next steps are stronger augmentation, learning-rate tuning, or a shallower design.
