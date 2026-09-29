@@ -1,4 +1,5 @@
-# Pet Breed Classification
+# Pet Breed Classification:
+
 A PyTorch study comparing pretrained and custom convolutional networks for fine-grained classification of 37 cat and dog breeds, with a Tkinter desktop app for top-5 inference.
 
 ## Dataset
@@ -30,6 +31,7 @@ Separate dataset instances share the same split indices, so augmentation is appl
 - **Pretrained backbone:** with under 3,000 training images, features learned on ImageNet are a strong starting point, and training is fast.
 - **Two adaptation levels:** freezing the backbone isolates the value of pretrained features. Unfreezing only `layer4` adapts the highest-level features to breed detail while keeping the general early filters.
 - **Differential learning rates:** 1e-4 for `layer4` and 1e-3 for the new head keeps the pretrained weights from being disrupted.
+- **Deployed model:** the transfer-learning model was saved for the desktop app rather than the fine-tuned one. Its training and validation curves stay close together (validation accuracy remains at or above training accuracy throughout), which indicates stable generalization. The fine-tuned model reaches slightly higher validation accuracy, but its training accuracy climbs above validation accuracy, an early sign of overfitting.
 - **Custom CNN regularization:** batch normalization, dropout, weight decay (1e-4), and a `ReduceLROnPlateau` scheduler were used to give the scratch model a fair chance.
 
 ## Experiments
@@ -55,5 +57,9 @@ All runs used Adam and cross-entropy loss.
 ## Key Findings
 
 - Pretrained features are decisive. Even a linear head on a frozen backbone exceeds 90% validation accuracy in about a minute of training.
-- Fine-tuning `layer4` gives a modest gain (about one point). The gap between training accuracy (92.7%) and validation accuracy (91.3%) suggests the higher capacity begins to overfit near the end of the run.
+- Fine-tuning `layer4` gives a modest gain in validation accuracy (about one point). However, its training accuracy (92.7%) ends above its validation accuracy (91.3%), and the two diverge over the run, suggesting the added capacity begins to overfit. The transfer-learning model shows no such divergence: its validation accuracy (90.4%) stays above its training accuracy (85.0%) at the final epoch, partly because training images are heavily augmented. It was therefore chosen as the saved model for its more stable generalization, at a cost of roughly one point of accuracy.
 - The custom CNN failed to learn. Its loss stayed near ln(37) ≈ 3.61 and accuracy stayed near chance (about 2.7%), and the 50-epoch run did not improve on the 10-epoch run. The scratch model, with this dataset size and setup, could not learn usable features. Likely next steps are stronger augmentation, learning-rate tuning, or a shallower design.
+
+## Limitations
+
+Metrics come from a held-out slice of `trainval`, and "best epoch" figures are chosen on that same set, so they are slightly optimistic. The official test split was not used.
